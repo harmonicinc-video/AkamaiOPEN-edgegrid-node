@@ -34,6 +34,6 @@
     "mocha-junit-reporter": "git://github.com/michaelleeallen/mocha-junit-reporter.git#3b657",
     "nock": "^13.2.2",
     "nyc": "^15.1.0",
-    "tsd": "^0.22.0"
+    "tsd": "^0.23.0"
   }
 }
