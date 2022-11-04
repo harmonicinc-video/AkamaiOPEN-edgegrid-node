@@ -1,5 +1,13 @@
 # RELEASE NOTES
 
+## 3.3.0 (Nov 08, 2022)
+
+#### IMPROVEMENTS:
+* Update various dependencies
+
+#### BUG FIXES
+* Fix adding `User-Agent` header to the request
+
 ## 3.2.0 (Apr 26, 2022)
 
 #### IMPROVEMENTS:
