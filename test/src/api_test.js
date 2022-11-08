@@ -186,6 +186,10 @@ describe('Api', function () {
             it('ensures a url is properly declared', function () {
                 assert.strictEqual(this.api.request.url, 'https://base.com/foo');
             });
+
+            it('ensures no User-Agent is added when AkamaiCLI env variables not set', function () {
+                assert.ok(!this.api.request.headers.hasOwnProperty('User-Agent'));
+            })
         });
 
         describe('when more specific request options are passed', function () {
@@ -196,7 +200,10 @@ describe('Api', function () {
                     body: {
                         foo: 'bar'
                     },
-                    somethingArbitrary: 'someValue'
+                    somethingArbitrary: 'someValue',
+                    headers: {
+                        'User-Agent': 'testUserAgent'
+                    }
                 });
             });
 
@@ -219,6 +226,10 @@ describe('Api', function () {
 
             it('extends the default request options with any others specified', function () {
                 assert.strictEqual(this.api.request.somethingArbitrary, 'someValue');
+            });
+
+            it('ensures provided User-Agent header is preserved', function () {
+                assert.strictEqual(this.api.request.headers['User-Agent'], 'testUserAgent');
             });
         });
 
@@ -246,6 +257,77 @@ describe('Api', function () {
 
             it('should return response as buffer', function () {
                 assert.strictEqual(this.api.request["responseType"], "arraybuffer");
+            });
+        });
+
+        describe("when akamai cli user agent is expected", function () {
+            beforeEach(function () {
+                process.env['AKAMAI_CLI'] = 'AkamaiCLI';
+                process.env['AKAMAI_CLI_VERSION'] = '1.0.0';
+                process.env['AKAMAI_CLI_COMMAND'] = 'command';
+                process.env['AKAMAI_CLI_COMMAND_VERSION'] = '0.0.1';
+            });
+
+            afterEach(function () {
+                process.env['AKAMAI_CLI'] = '';
+                process.env['AKAMAI_CLI_VERSION'] = '';
+                process.env['AKAMAI_CLI_COMMAND'] = '';
+                process.env['AKAMAI_CLI_COMMAND_VERSION'] = '';
+            })
+
+            describe("when no User-Agent set in the request", function () {
+                beforeEach(function () {
+                    this.api.auth({
+                        path: '/foo'
+                    });
+                });
+
+                it("should set User-Agent", function () {
+                    assert.strictEqual(this.api.request.headers['User-Agent'], 'AkamaiCLI/1.0.0 AkamaiCLI-command/0.0.1');
+                });
+            });
+
+            describe("when User-Agent is already in the request", function () {
+                beforeEach(function () {
+                    this.api.auth({
+                        path: '/foo',
+                        headers: {
+                            'User-Agent': 'testAgent'
+                        }
+                    });
+                });
+
+                it("should append to already present User-Agent header", function () {
+                    assert.strictEqual(this.api.request.headers['User-Agent'], 'testAgent AkamaiCLI/1.0.0 AkamaiCLI-command/0.0.1');
+                });
+            });
+
+            describe("when only AkamaiCLI info is set", function () {
+                beforeEach(function () {
+                    process.env['AKAMAI_CLI_COMMAND'] = '';
+                    process.env['AKAMAI_CLI_COMMAND_VERSION'] = '';
+                    this.api.auth({
+                        path: '/foo'
+                    });
+                });
+
+                it("should only set AkamaiCLI/version User-Agent", function () {
+                    assert.strictEqual(this.api.request.headers['User-Agent'], 'AkamaiCLI/1.0.0');
+                });
+            });
+
+            describe("when only AkamaiCLI command info is set", function () {
+                beforeEach(function () {
+                    process.env['AKAMAI_CLI'] = '';
+                    process.env['AKAMAI_CLI_VERSION'] = '';
+                    this.api.auth({
+                        path: '/foo'
+                    });
+                });
+
+                it("should only set AkamaiCLI/version User-Agent", function () {
+                    assert.strictEqual(this.api.request.headers['User-Agent'], 'AkamaiCLI-command/0.0.1');
+                });
             });
         });
     });

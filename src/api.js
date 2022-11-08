@@ -48,23 +48,16 @@ const EdgeGrid = function (client_token, client_secret, access_token, host, debu
  * @return EdgeGrid object (self)
  */
 EdgeGrid.prototype.auth = function (req) {
-    let headers = {
-        'Content-Type': "application/json"
-    };
-    if (process.env['AKAMAI_CLI'] && process.env['AKAMAI_CLI_VERSION']) {
-        headers['User-Agent'] = (headers['User-Agent'] ? headers['User-Agent'] + " " : "") + `AkamaiCLI/${process.env['AKAMAI_CLI_VERSION']}`;
-    }
-    if (process.env['AKAMAI_CLI_COMMAND'] && process.env['AKAMAI_CLI_COMMAND_VERSION']) {
-        headers['User-Agent'] = (headers['User-Agent'] ? headers['User-Agent'] + " " : "") + `AkamaiCLI-${process.env['AKAMAI_CLI_COMMAND']}/${process.env['AKAMAI_CLI_COMMAND_VERSION']}`;
-    }
     req = helpers.extend(req, {
         baseURL: this.config.host,
         url: req.path,
         method: 'GET',
-        headers: headers,
+        headers: {},
         maxRedirects: 0,
         body: ''
     });
+
+    req.headers = helpers.extendHeaders(req.headers)
 
     let isTarball = req.body instanceof Uint8Array && req.headers['Content-Type'] === 'application/gzip';
 

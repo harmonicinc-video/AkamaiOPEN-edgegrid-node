@@ -108,7 +108,7 @@ module.exports = {
         return dataToSignStr;
     },
 
-    extend: function (a, b) {
+     extend: function (a, b) {
         let key;
 
         for (key in b) {
@@ -118,6 +118,27 @@ module.exports = {
         }
 
         return a;
+    },
+
+    extendHeaders: function (headers) {
+        if (!headers.hasOwnProperty('Content-Type')) {
+            headers['Content-Type'] = "application/json";
+        }
+
+        let userAgents = [headers['User-Agent']];
+        if (process.env['AKAMAI_CLI'] && process.env['AKAMAI_CLI_VERSION']) {
+            userAgents.push(`AkamaiCLI/${process.env['AKAMAI_CLI_VERSION']}`);
+        }
+        if (process.env['AKAMAI_CLI_COMMAND'] && process.env['AKAMAI_CLI_COMMAND_VERSION']) {
+            userAgents.push(`AkamaiCLI-${process.env['AKAMAI_CLI_COMMAND']}/${process.env['AKAMAI_CLI_COMMAND_VERSION']}`);
+        }
+
+        userAgents = userAgents.filter(v => v)
+        if (userAgents.length > 0) {
+            headers['User-Agent'] = userAgents.join(' ')
+        }
+
+        return headers;
     },
 
     isRedirect: function (statusCode) {
