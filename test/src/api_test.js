@@ -189,7 +189,7 @@ describe('Api', function () {
 
             it('ensures no User-Agent is added when AkamaiCLI env variables not set', function () {
                 assert.ok(!this.api.request.headers.hasOwnProperty('User-Agent'));
-            })
+            });
         });
 
         describe('when more specific request options are passed', function () {
@@ -237,8 +237,10 @@ describe('Api', function () {
             beforeEach(function () {
                 this.api.auth({
                     path: '/foo',
+                    body: 'someBody',
                     headers: {
-                        'Accept': `application/gzip`
+                        'Accept': `application/gzip`,
+                        'Content-Type': `application/gzip`
                     }
                 });
             });
@@ -251,8 +253,37 @@ describe('Api', function () {
                 assert.strictEqual(this.api.request.method, 'GET');
             });
 
-            it('ensures a default empty body', function () {
-                assert.strictEqual(this.api.request.body, '');
+            it('ensures the specified body is not modified', function () {
+                assert.strictEqual(this.api.request.body, 'someBody');
+            });
+
+            it('should return response as buffer', function () {
+                assert.strictEqual(this.api.request["responseType"], "arraybuffer");
+            });
+        });
+
+        describe("when tar+gzip response format is expected", function () {
+            beforeEach(function () {
+                this.api.auth({
+                    path: '/foo',
+                    body: 'someBody',
+                    headers: {
+                        'Accept': `application/tar+gzip`,
+                        'Content-Type': `application/tar+gzip`
+                    }
+                });
+            });
+
+            it('adds an Authorization header to the request it is passed', function () {
+                assert.strictEqual(typeof this.api.request.headers.Authorization === 'string', true);
+            });
+
+            it('ensures a default GET method', function () {
+                assert.strictEqual(this.api.request.method, 'GET');
+            });
+
+            it('ensures the specified body is not modified', function () {
+                assert.strictEqual(this.api.request.body, 'someBody');
             });
 
             it('should return response as buffer', function () {
@@ -273,7 +304,7 @@ describe('Api', function () {
                 process.env['AKAMAI_CLI_VERSION'] = '';
                 process.env['AKAMAI_CLI_COMMAND'] = '';
                 process.env['AKAMAI_CLI_COMMAND_VERSION'] = '';
-            })
+            });
 
             describe("when no User-Agent set in the request", function () {
                 beforeEach(function () {
