@@ -174,6 +174,38 @@ eg.auth({
 });
 ```
 
+### Proxy
+To use edgegrid with proxy, you can configure it with `proxy` field:
+
+```javascript
+eg.auth({
+  path : `/papi/v1/cpcodes`,
+  method: 'GET',
+  proxy: {
+    host: 'my.proxy.com',
+    protocol: "https",
+    port: 3128,
+    auth: {
+      username: 'my-user',
+      password: 'my-password'
+    }
+  }
+}).send((err, response) => {
+  if (err) {
+    return console.log(err);
+  }
+  console.log('Success!');
+  // Do something with response
+});
+```
+
+or use environment variable:
+
+```shell
+$ export https_proxy=https://username:password@host:port
+$ node myapp.js
+```
+
 ### Debug
 
 With EdgeGrid you can enable debugging either as part of the EdgeGrid instantiation object
