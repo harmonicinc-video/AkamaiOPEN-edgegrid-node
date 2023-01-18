@@ -124,4 +124,123 @@ describe('helpers', function () {
             assert.strictEqual(helpers.resolveHome('some/path/testdir'), "some/path/testdir");
         });
     });
+
+    describe('#extendHeaders', function () {
+        describe('when Content-Type is not provided', function () {
+            it('should set application/json as default', function () {
+                headers = helpers.extendHeaders({})
+                assert.strictEqual(headers['Content-Type'], 'application/json')
+            })
+        })
+
+        describe('when Content-Type is provided', function () {
+            it('should preserve the value', function () {
+                contentType = 'text/html'
+                headers = helpers.extendHeaders({
+                    'Content-Type': contentType
+                })
+                assert.strictEqual(headers['Content-Type'], contentType)
+            })
+        })
+
+        describe('when Accept is not provided', function () {
+            it('should set aapplication/json as default', function () {
+                headers = helpers.extendHeaders({})
+                assert.strictEqual(headers['Accept'], 'application/json')
+            })
+        })
+
+        describe('when Accept is provided', function () {
+            it('should preserve the value', function () {
+                accept = 'text/html'
+                headers = helpers.extendHeaders({
+                    'Accept': accept
+                })
+                assert.strictEqual(headers['Accept'], accept)
+            })
+        })
+
+        describe('when akamai cli user agent env is not provided', function () {
+            describe('when user agent is set in headers', function () {
+                it('should preserve the value and not append anything', function () {
+                    testAgent = 'testAgent/1.0.0'
+                    headers = helpers.extendHeaders({
+                        'User-Agent': testAgent
+                    });
+                    assert.strictEqual(headers['User-Agent'], testAgent)
+                });
+            });
+
+            describe('when no user agent is set in headers', function () {
+                it('should do nothing', function () {
+                    headers = helpers.extendHeaders({})
+                    assert.equal(headers.hasOwnProperty('User-Agent'), false)
+                });
+            });
+        });
+
+        describe('when akamai cli user agent env is provided', function () {
+            beforeEach(function () {
+                process.env['AKAMAI_CLI'] = 'AkamaiCLI';
+                process.env['AKAMAI_CLI_VERSION'] = '1.0.0';
+                process.env['AKAMAI_CLI_COMMAND'] = 'command';
+                process.env['AKAMAI_CLI_COMMAND_VERSION'] = '0.0.1';
+                this.akamaiCLIAgent = 'AkamaiCLI/1.0.0 AkamaiCLI-command/0.0.1'
+            });
+
+            afterEach(function () {
+                process.env['AKAMAI_CLI'] = '';
+                process.env['AKAMAI_CLI_VERSION'] = '';
+                process.env['AKAMAI_CLI_COMMAND'] = '';
+                process.env['AKAMAI_CLI_COMMAND_VERSION'] = '';
+            });
+
+            describe('when user agent is set in headers', function () {
+                it('should append akamaiCLI agent', function () {
+                    testAgent = 'testAgent/1.0.0'
+                    headers = helpers.extendHeaders({
+                        'User-Agent': testAgent
+                    });
+                    expectedAgent = testAgent + " " + this.akamaiCLIAgent
+                    assert.strictEqual(headers['User-Agent'], expectedAgent)
+                });
+            });
+
+            describe('when no user agent is set in headers', function () {
+                describe('when both akamaiCLI and command env is set', function () {
+                    it('should set two user agents', function () {
+                        headers = helpers.extendHeaders({})
+                        assert.strictEqual(headers['User-Agent'], this.akamaiCLIAgent)
+                    });
+                });
+
+                describe("when only AkamaiCLI info is set", function () {
+                    beforeEach(function () {
+                        process.env['AKAMAI_CLI_COMMAND'] = '';
+                        process.env['AKAMAI_CLI_COMMAND_VERSION'] = '';
+                        this.akamaiCLIAgent = 'AkamaiCLI/1.0.0'
+                    });
+    
+                    it("should only set AkamaiCLI/version User-Agent", function () {
+                        headers = helpers.extendHeaders({})
+                        assert.strictEqual(headers['User-Agent'], this.akamaiCLIAgent);
+                    });
+                });
+    
+                describe("when only AkamaiCLI command info is set", function () {
+                    beforeEach(function () {
+                        process.env['AKAMAI_CLI'] = '';
+                        process.env['AKAMAI_CLI_VERSION'] = '';
+                        this.akamaiCLIAgent = 'AkamaiCLI-command/0.0.1'
+                    });
+    
+                    it("should only set AkamaiCLI/version User-Agent", function () {
+                        headers = helpers.extendHeaders({})
+                        assert.strictEqual(headers['User-Agent'], this.akamaiCLIAgent);
+                    });
+                });
+            });
+
+        })
+    })
 });

@@ -175,6 +175,10 @@ describe('Api', function () {
                 assert.strictEqual(this.api.request.headers['Content-Type'], 'application/json');
             });
 
+            it('ensures a default Accept of application/json', function () {
+                assert.strictEqual(this.api.request.headers['Accept'], 'application/json');
+            });
+
             it('ensures a default GET method', function () {
                 assert.strictEqual(this.api.request.method, 'GET');
             });
@@ -202,7 +206,8 @@ describe('Api', function () {
                     },
                     somethingArbitrary: 'someValue',
                     headers: {
-                        'User-Agent': 'testUserAgent'
+                        'User-Agent': 'testUserAgent',
+                        'Accept': 'text/html'
                     }
                 });
             });
@@ -230,6 +235,10 @@ describe('Api', function () {
 
             it('ensures provided User-Agent header is preserved', function () {
                 assert.strictEqual(this.api.request.headers['User-Agent'], 'testUserAgent');
+            });
+
+            it('ensures provided Accept header is preserved', function () {
+                assert.strictEqual(this.api.request.headers['Accept'], 'text/html');
             });
         });
 
