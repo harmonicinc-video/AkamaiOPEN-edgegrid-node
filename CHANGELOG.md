@@ -1,5 +1,10 @@
 # RELEASE NOTES
 
+## X.X.X (X X, X)
+
+#### IMPROVEMENTS:
+* Reads 'max_body' (alias 'max-body') field from `.edgerc` config file with default value of `131072` ([PR#1](https://github.com/akamai/AkamaiOPEN-edgegrid-node/pull/1))
+
 ## 3.3.0 (Nov 08, 2022)
 
 #### IMPROVEMENTS:

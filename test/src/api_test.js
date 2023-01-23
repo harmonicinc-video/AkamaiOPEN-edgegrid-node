@@ -23,7 +23,8 @@ describe('Api', function () {
             'clientToken',
             'clientSecret',
             'accessToken',
-            'base.com'
+            'base.com',
+            false,
         );
     });
 
@@ -89,7 +90,98 @@ describe('Api', function () {
                 assert.strictEqual(this.api.config.host, 'https://sectionexample.luna.akamaiapis.net');
             });
 
-            describe('when it is instantiated with an object that does not specfy a section', function () {
+            it('reports the max-body from the edgerc associated with the specified section', function() {
+                assert.equal(this.api.config.max_body, 131072);
+            });
+
+            describe('when it is instantiated with an object with custom `max-body` value', function () {
+                beforeEach(function () {
+                    this.api = new Api({
+                        path: path.resolve(__dirname, '../test_edgerc'),
+                        section: 'custom:max-body'
+                    });
+                });
+
+                it('reports the client token from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.strictEqual(this.api.config.client_token, 'sectionClientToken');
+                });
+
+                it('reports the client secret from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.strictEqual(this.api.config.client_secret, 'sectionClientSecret');
+                });
+
+                it('reports the access token from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.strictEqual(this.api.config.access_token, 'sectionAccessToken');
+                });
+
+                it('reports the API host from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.strictEqual(this.api.config.host, 'https://sectionexample.luna.akamaiapis.net');
+                });
+
+                it('reports the max-body from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.equal(this.api.config.max_body, 4096);
+                });
+            });
+
+            describe('when it is instantiated with an object with custom `max_body` value', function () {
+                beforeEach(function () {
+                    this.api = new Api({
+                        path: path.resolve(__dirname, '../test_edgerc'),
+                        section: 'custom:max_body'
+                    });
+                });
+
+                it('reports the client token from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.strictEqual(this.api.config.client_token, 'sectionClientToken');
+                });
+
+                it('reports the client secret from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.strictEqual(this.api.config.client_secret, 'sectionClientSecret');
+                });
+
+                it('reports the access token from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.strictEqual(this.api.config.access_token, 'sectionAccessToken');
+                });
+
+                it('reports the API host from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.strictEqual(this.api.config.host, 'https://sectionexample.luna.akamaiapis.net');
+                });
+
+                it('reports the max-body from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.equal(this.api.config.max_body, 8192);
+                });
+            });
+
+            describe('when it is instantiated with an object without specified `max_body` value', function () {
+                beforeEach(function () {
+                    this.api = new Api({
+                        path: path.resolve(__dirname, '../test_edgerc'),
+                        section: 'no-max-body'
+                    });
+                });
+
+                it('reports the client token from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.strictEqual(this.api.config.client_token, 'sectionClientToken');
+                });
+
+                it('reports the client secret from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.strictEqual(this.api.config.client_secret, 'sectionClientSecret');
+                });
+
+                it('reports the access token from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.strictEqual(this.api.config.access_token, 'sectionAccessToken');
+                });
+
+                it('reports the API host from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.strictEqual(this.api.config.host, 'https://sectionexample.luna.akamaiapis.net');
+                });
+
+                it('reports the max-body from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.equal(this.api.config.max_body, 131072);
+                });
+            });
+
+            describe('when it is instantiated with an object that does not specify a section', function () {
                 beforeEach(function () {
                     this.api = new Api({
                         path: path.resolve(__dirname, '../test_edgerc')
@@ -111,6 +203,10 @@ describe('Api', function () {
                 it('reports the API host from the edgerc associated with the default section', function () {
                     assert.strictEqual(this.api.config.host, 'https://example.luna.akamaiapis.net');
                 });
+
+                it('reports the max-body from the edgerc associated with the default section', function() {
+                    assert.equal(this.api.config.max_body, 131072);
+                });
             });
 
             describe('when it is instantiated with an object that does not specify a path nor a section', function () {
@@ -126,6 +222,7 @@ describe('Api', function () {
                     assert.strictEqual(this.api.config.client_token, "clientToken");
                     assert.strictEqual(this.api.config.client_secret, "clientSecret");
                     assert.strictEqual(this.api.config.access_token, "accessToken");
+                    assert.strictEqual(this.api.config.max_body, 131072);
                 });
             });
 

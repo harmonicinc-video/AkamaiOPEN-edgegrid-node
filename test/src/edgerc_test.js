@@ -23,7 +23,7 @@ describe('edgerc', function () {
         process.env['AKAMAI_CLIENT_SECRET'] = '';
         process.env['AKAMAI_ACCESS_TOKEN'] = '';
     });
-    describe('the parsed edgrc file it returns', function () {
+    describe('the parsed edgerc file it returns', function () {
         describe('when it is not passed a second argument indicating config section', function () {
             beforeEach(function () {
                 this.config = edgerc(path.resolve(__dirname, '../test_edgerc'));
@@ -43,6 +43,10 @@ describe('edgerc', function () {
 
             it('reports the default access_token', function () {
                 assert.strictEqual(this.config.access_token, 'accessToken');
+            });
+
+            it('reports the default max_body', function () {
+                assert.equal(this.config.max_body, 131072);
             });
         });
 
@@ -65,6 +69,62 @@ describe('edgerc', function () {
 
             it('reports the access_token associated with the section', function () {
                 assert.strictEqual(this.config.access_token, 'sectionAccessToken');
+            });
+
+            it('reports the max_body associated with the section', function () {
+                assert.equal(this.config.max_body, 131072);
+            });
+        });
+
+        describe('when it is passed a second argument indicating config section without specified max_body', function () {
+            beforeEach(function () {
+                this.config = edgerc(path.resolve(__dirname, '../test_edgerc'), 'no-max-body');
+            });
+
+            it('reports the host associated with the section without specified max_body', function () {
+                assert.strictEqual(this.config.host, 'https://sectionexample.luna.akamaiapis.net');
+            });
+
+            it('reports the client_token associated with the section without specified max_body', function () {
+                assert.strictEqual(this.config.client_token, 'sectionClientToken');
+            });
+
+            it('reports the client_secret associated with the section without specified max_body', function () {
+                assert.strictEqual(this.config.client_secret, 'sectionClientSecret');
+            });
+
+            it('reports the access_token associated with the section without specified max_body', function () {
+                assert.strictEqual(this.config.access_token, 'sectionAccessToken');
+            });
+
+            it('reports the max_body associated with the section without specified max_body', function () {
+                assert.equal(this.config.max_body, 131072);
+            });
+        });
+
+        describe('when it is passed a second argument indicating config section with custom `max_body` value', function () {
+            beforeEach(function () {
+                this.config = edgerc(path.resolve(__dirname, '../test_edgerc'), 'custom:max_body');
+            });
+
+            it('reports the host associated with the section with with custom `max_body`', function () {
+                assert.strictEqual(this.config.host, 'https://sectionexample.luna.akamaiapis.net');
+            });
+
+            it('reports the client_token associated with the section with with custom `max_body`', function () {
+                assert.strictEqual(this.config.client_token, 'sectionClientToken');
+            });
+
+            it('reports the client_secret associated with the section with with custom `max_body`', function () {
+                assert.strictEqual(this.config.client_secret, 'sectionClientSecret');
+            });
+
+            it('reports the access_token associated with the section with with custom `max_body`', function () {
+                assert.strictEqual(this.config.access_token, 'sectionAccessToken');
+            });
+
+            it('reports the max_body associated with the section with with custom `max_body`', function () {
+                assert.equal(this.config.max_body, 8192);
             });
         });
 
@@ -116,8 +176,8 @@ describe('edgerc', function () {
                 this.config = edgerc();
             });
 
-            it('has four configuration items', function () {
-                assert.strictEqual(Object.keys(this.config).length, 4);
+            it('has five configuration items', function () {
+                assert.strictEqual(Object.keys(this.config).length, 5);
             });
 
             it('has valid config values', function () {
@@ -125,6 +185,7 @@ describe('edgerc', function () {
                 assert.strictEqual(this.config.client_token, "clientToken");
                 assert.strictEqual(this.config.client_secret, "clientSecret");
                 assert.strictEqual(this.config.access_token, "accessToken");
+                assert.equal(this.config.max_body, 131072);
             });
         });
 
@@ -148,6 +209,7 @@ describe('edgerc', function () {
                 assert.strictEqual(this.config.client_token, "clientToken");
                 assert.strictEqual(this.config.client_secret, "clientSecret");
                 assert.strictEqual(this.config.access_token, "accessToken");
+                assert.equal(this.config.max_body, 131072);
             });
         });
     });
