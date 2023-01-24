@@ -1,9 +1,15 @@
 # RELEASE NOTES
 
-## X.X.X (X X, X)
+## 3.4.0 (Jan 26, 2023)
 
 #### IMPROVEMENTS:
 * Reads 'max_body' (alias 'max-body') field from `.edgerc` config file with default value of `131072` ([PR#1](https://github.com/akamai/AkamaiOPEN-edgegrid-node/pull/1))
+* Add default Accept header (related to [PR#43](https://github.com/akamai/AkamaiOPEN-edgegrid-node/pull/43)
+    and [I#33](https://github.com/akamai/AkamaiOPEN-edgegrid-node/issues/33))
+* Add README section explaining how to use proxy (related to [PR#35](https://github.com/akamai/AkamaiOPEN-edgegrid-node/pull/35)
+    and [I#59](https://github.com/akamai/AkamaiOPEN-edgegrid-node/issues/59))
+* Add README section explaining how to change request encoding (related to [PR#58](https://github.com/akamai/AkamaiOPEN-edgegrid-node/pull/58))
+* Update various dependencies
 
 ## 3.3.0 (Nov 08, 2022)
 
