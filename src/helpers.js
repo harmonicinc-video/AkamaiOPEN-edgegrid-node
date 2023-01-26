@@ -108,7 +108,7 @@ module.exports = {
         return dataToSignStr;
     },
 
-     extend: function (a, b) {
+    extend: function (a, b) {
         let key;
 
         for (key in b) {
@@ -123,6 +123,9 @@ module.exports = {
     extendHeaders: function (headers) {
         if (!headers.hasOwnProperty('Content-Type')) {
             headers['Content-Type'] = "application/json";
+        }
+        if (!headers.hasOwnProperty('Accept')) {
+            headers['Accept'] = "application/json";
         }
 
         let userAgents = [headers['User-Agent']];

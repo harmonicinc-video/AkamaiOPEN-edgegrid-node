@@ -57,9 +57,10 @@ EdgeGrid.prototype.auth = function (req) {
         body: ''
     });
 
-    req.headers = helpers.extendHeaders(req.headers)
+    req.headers = helpers.extendHeaders(req.headers);
 
-    let isTarball = req.body instanceof Uint8Array && req.headers['Content-Type'] === 'application/gzip';
+    let isTarball = req.body instanceof Uint8Array &&
+        (req.headers['Content-Type'] === 'application/gzip' || req.headers['Content-Type'] === 'application/tar+gzip');
 
     // Convert body object to properly formatted string
     if (req.body) {
@@ -77,7 +78,7 @@ EdgeGrid.prototype.auth = function (req) {
         this.config.access_token,
         this.config.host
     );
-    if (req.headers['Accept'] === 'application/gzip') {
+    if (req.headers['Accept'] === 'application/gzip' || req.headers['Accept'] === 'application/tar+gzip') {
         this.request["responseType"] = 'arraybuffer';
     }
     return this;

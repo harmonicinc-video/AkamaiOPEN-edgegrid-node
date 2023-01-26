@@ -23,7 +23,8 @@ describe('Api', function () {
             'clientToken',
             'clientSecret',
             'accessToken',
-            'base.com'
+            'base.com',
+            false,
         );
     });
 
@@ -89,7 +90,98 @@ describe('Api', function () {
                 assert.strictEqual(this.api.config.host, 'https://sectionexample.luna.akamaiapis.net');
             });
 
-            describe('when it is instantiated with an object that does not specfy a section', function () {
+            it('reports the max-body from the edgerc associated with the specified section', function() {
+                assert.equal(this.api.config.max_body, 131072);
+            });
+
+            describe('when it is instantiated with an object with custom `max-body` value', function () {
+                beforeEach(function () {
+                    this.api = new Api({
+                        path: path.resolve(__dirname, '../test_edgerc'),
+                        section: 'custom:max-body'
+                    });
+                });
+
+                it('reports the client token from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.strictEqual(this.api.config.client_token, 'sectionClientToken');
+                });
+
+                it('reports the client secret from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.strictEqual(this.api.config.client_secret, 'sectionClientSecret');
+                });
+
+                it('reports the access token from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.strictEqual(this.api.config.access_token, 'sectionAccessToken');
+                });
+
+                it('reports the API host from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.strictEqual(this.api.config.host, 'https://sectionexample.luna.akamaiapis.net');
+                });
+
+                it('reports the max-body from the edgerc associated with the specified section with custom `max-body`', function () {
+                    assert.equal(this.api.config.max_body, 4096);
+                });
+            });
+
+            describe('when it is instantiated with an object with custom `max_body` value', function () {
+                beforeEach(function () {
+                    this.api = new Api({
+                        path: path.resolve(__dirname, '../test_edgerc'),
+                        section: 'custom:max_body'
+                    });
+                });
+
+                it('reports the client token from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.strictEqual(this.api.config.client_token, 'sectionClientToken');
+                });
+
+                it('reports the client secret from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.strictEqual(this.api.config.client_secret, 'sectionClientSecret');
+                });
+
+                it('reports the access token from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.strictEqual(this.api.config.access_token, 'sectionAccessToken');
+                });
+
+                it('reports the API host from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.strictEqual(this.api.config.host, 'https://sectionexample.luna.akamaiapis.net');
+                });
+
+                it('reports the max-body from the edgerc associated with the specified section with custom `max_body`', function () {
+                    assert.equal(this.api.config.max_body, 8192);
+                });
+            });
+
+            describe('when it is instantiated with an object without specified `max_body` value', function () {
+                beforeEach(function () {
+                    this.api = new Api({
+                        path: path.resolve(__dirname, '../test_edgerc'),
+                        section: 'no-max-body'
+                    });
+                });
+
+                it('reports the client token from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.strictEqual(this.api.config.client_token, 'sectionClientToken');
+                });
+
+                it('reports the client secret from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.strictEqual(this.api.config.client_secret, 'sectionClientSecret');
+                });
+
+                it('reports the access token from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.strictEqual(this.api.config.access_token, 'sectionAccessToken');
+                });
+
+                it('reports the API host from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.strictEqual(this.api.config.host, 'https://sectionexample.luna.akamaiapis.net');
+                });
+
+                it('reports the max-body from the edgerc associated with the specified section without specified `max_body`', function () {
+                    assert.equal(this.api.config.max_body, 131072);
+                });
+            });
+
+            describe('when it is instantiated with an object that does not specify a section', function () {
                 beforeEach(function () {
                     this.api = new Api({
                         path: path.resolve(__dirname, '../test_edgerc')
@@ -111,6 +203,10 @@ describe('Api', function () {
                 it('reports the API host from the edgerc associated with the default section', function () {
                     assert.strictEqual(this.api.config.host, 'https://example.luna.akamaiapis.net');
                 });
+
+                it('reports the max-body from the edgerc associated with the default section', function() {
+                    assert.equal(this.api.config.max_body, 131072);
+                });
             });
 
             describe('when it is instantiated with an object that does not specify a path nor a section', function () {
@@ -126,6 +222,7 @@ describe('Api', function () {
                     assert.strictEqual(this.api.config.client_token, "clientToken");
                     assert.strictEqual(this.api.config.client_secret, "clientSecret");
                     assert.strictEqual(this.api.config.access_token, "accessToken");
+                    assert.strictEqual(this.api.config.max_body, 131072);
                 });
             });
 
@@ -175,6 +272,10 @@ describe('Api', function () {
                 assert.strictEqual(this.api.request.headers['Content-Type'], 'application/json');
             });
 
+            it('ensures a default Accept of application/json', function () {
+                assert.strictEqual(this.api.request.headers['Accept'], 'application/json');
+            });
+
             it('ensures a default GET method', function () {
                 assert.strictEqual(this.api.request.method, 'GET');
             });
@@ -189,7 +290,7 @@ describe('Api', function () {
 
             it('ensures no User-Agent is added when AkamaiCLI env variables not set', function () {
                 assert.ok(!this.api.request.headers.hasOwnProperty('User-Agent'));
-            })
+            });
         });
 
         describe('when more specific request options are passed', function () {
@@ -202,7 +303,8 @@ describe('Api', function () {
                     },
                     somethingArbitrary: 'someValue',
                     headers: {
-                        'User-Agent': 'testUserAgent'
+                        'User-Agent': 'testUserAgent',
+                        'Accept': 'text/html'
                     }
                 });
             });
@@ -231,14 +333,20 @@ describe('Api', function () {
             it('ensures provided User-Agent header is preserved', function () {
                 assert.strictEqual(this.api.request.headers['User-Agent'], 'testUserAgent');
             });
+
+            it('ensures provided Accept header is preserved', function () {
+                assert.strictEqual(this.api.request.headers['Accept'], 'text/html');
+            });
         });
 
         describe("when gzip response format is expected", function () {
             beforeEach(function () {
                 this.api.auth({
                     path: '/foo',
+                    body: 'someBody',
                     headers: {
-                        'Accept': `application/gzip`
+                        'Accept': `application/gzip`,
+                        'Content-Type': `application/gzip`
                     }
                 });
             });
@@ -251,8 +359,37 @@ describe('Api', function () {
                 assert.strictEqual(this.api.request.method, 'GET');
             });
 
-            it('ensures a default empty body', function () {
-                assert.strictEqual(this.api.request.body, '');
+            it('ensures the specified body is not modified', function () {
+                assert.strictEqual(this.api.request.body, 'someBody');
+            });
+
+            it('should return response as buffer', function () {
+                assert.strictEqual(this.api.request["responseType"], "arraybuffer");
+            });
+        });
+
+        describe("when tar+gzip response format is expected", function () {
+            beforeEach(function () {
+                this.api.auth({
+                    path: '/foo',
+                    body: 'someBody',
+                    headers: {
+                        'Accept': `application/tar+gzip`,
+                        'Content-Type': `application/tar+gzip`
+                    }
+                });
+            });
+
+            it('adds an Authorization header to the request it is passed', function () {
+                assert.strictEqual(typeof this.api.request.headers.Authorization === 'string', true);
+            });
+
+            it('ensures a default GET method', function () {
+                assert.strictEqual(this.api.request.method, 'GET');
+            });
+
+            it('ensures the specified body is not modified', function () {
+                assert.strictEqual(this.api.request.body, 'someBody');
             });
 
             it('should return response as buffer', function () {
@@ -273,7 +410,7 @@ describe('Api', function () {
                 process.env['AKAMAI_CLI_VERSION'] = '';
                 process.env['AKAMAI_CLI_COMMAND'] = '';
                 process.env['AKAMAI_CLI_COMMAND_VERSION'] = '';
-            })
+            });
 
             describe("when no User-Agent set in the request", function () {
                 beforeEach(function () {

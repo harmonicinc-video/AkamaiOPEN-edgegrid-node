@@ -150,6 +150,62 @@ eg.auth({
 // https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/papi/v1/cpcodes?contractId=ctr_1234&groupId=grp_1234
 ```
 
+### Encoding
+
+When interacting with binary data, such as during retrieval of PDF invoices, `responseType` should be specified as `arraybuffer` during the `auth` method call. Omission of `responseType` will cause an unreadable or blank response.
+
+```javascript
+const fs = require('fs');
+
+eg.auth({
+  path : `/invoicing-api/v2/contracts/${contractId}/invoices/${invoiceNumber}/files/${fileName}`,
+  method: 'GET',
+  responseType: 'arraybuffer', // Important
+}).send((err, response) => {
+  if (err) {
+    return console.log(err);
+  }
+  fs.writeFile(`./${fileName}`, response.data, 'binary', (err) => {
+    if (err){
+      return console.log(err);
+    }
+    console.log('File was saved!');
+  });
+});
+```
+
+### Proxy
+To use edgegrid with proxy, you can configure it with `proxy` field:
+
+```javascript
+eg.auth({
+  path : `/papi/v1/cpcodes`,
+  method: 'GET',
+  proxy: {
+    host: 'my.proxy.com',
+    protocol: "https",
+    port: 3128,
+    auth: {
+      username: 'my-user',
+      password: 'my-password'
+    }
+  }
+}).send((err, response) => {
+  if (err) {
+    return console.log(err);
+  }
+  console.log('Success!');
+  // Do something with response
+});
+```
+
+or use environment variable:
+
+```shell
+$ export https_proxy=https://username:password@host:port
+$ node myapp.js
+```
+
 ### Debug
 
 With EdgeGrid you can enable debugging either as part of the EdgeGrid instantiation object
