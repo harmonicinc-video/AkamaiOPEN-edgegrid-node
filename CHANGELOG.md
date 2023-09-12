@@ -1,5 +1,13 @@
 # RELEASE NOTES
 
+## 3.4.2 (Sep 12, 2023)
+
+#### BUG FIXES
+* Don't set the default `''` (empty) body in the requests
+
+#### IMPROVEMENTS:
+* Update various dependencies
+
 ## 3.4.1 (May 09, 2023)
 
 #### IMPROVEMENTS:
