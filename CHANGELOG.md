@@ -1,5 +1,10 @@
 # RELEASE NOTES
 
+## 3.4.4 (Nov 15, 2023)
+
+#### IMPROVEMENTS:
+* Update various dependencies
+
 ## 3.4.3 (Oct 23, 2023)
 
 #### IMPROVEMENTS:
