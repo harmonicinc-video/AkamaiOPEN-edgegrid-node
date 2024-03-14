@@ -40,8 +40,7 @@ function getSection(lines, sectionName) {
 }
 
 function validatedConfig(config) {
-
-    config.max_body = config.max_body || 131072
+    config.max_body = helpers.getDefaultOrMaxBody(config.max_body);
 
     if (!(config.host && config.access_token &&
         config.client_secret && config.client_token)) {
@@ -81,7 +80,7 @@ function buildObj(configs) {
         if (index > -1 && !isComment) {
             key = config.substr(0, index);
             if (key.startsWith("max-body")) {
-                key = key.replace('-', '_')
+                key = key.replace('-', '_');
             }
             val = config.substring(index + 1);
             // remove inline comments

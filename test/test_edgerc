@@ -26,6 +26,13 @@ client_secret = sectionClientSecret
 access_token = sectionAccessToken
 max_body = 8192
 
+[custom:max_body_NAN]
+host = sectionexample.luna.akamaiapis.net
+client_token = sectionClientToken
+client_secret = sectionClientSecret
+access_token = sectionAccessToken
+max_body = 8A192
+
 [no-max-body]
 host = sectionexample.luna.akamaiapis.net
 client_token = sectionClientToken
