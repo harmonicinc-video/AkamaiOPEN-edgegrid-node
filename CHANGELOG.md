@@ -7,7 +7,7 @@
 * Implemented support for the `max_body` parameter when the configuration is provided as function parameter.
 
 #### IMPROVEMENTS:
-* Update various dependencies
+* Updated various dependencies
 
 ## 3.4.4 (Nov 15, 2023)
 
