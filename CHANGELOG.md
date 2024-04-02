@@ -1,8 +1,13 @@
 # RELEASE NOTES
 
-## X.X.X (X X, X)
+## 3.4.5 (Apr 3, 2024)
+
+#### BUG FIXES
 * Fixed a bug where the `max_body` parameter was not utilized when generating the authentication header.
 * Implemented support for the `max_body` parameter when the configuration is provided as function parameter.
+
+#### IMPROVEMENTS:
+* Update various dependencies
 
 ## 3.4.4 (Nov 15, 2023)
 
