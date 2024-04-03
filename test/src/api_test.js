@@ -17,6 +17,8 @@ const assert = require('assert'),
     path = require('path'),
     Api = require('../../src/api');
 
+const EdgeGrid = require("../../index");
+
 describe('Api', function () {
     beforeEach(function () {
         this.api = new Api(
@@ -24,7 +26,7 @@ describe('Api', function () {
             'clientSecret',
             'accessToken',
             'base.com',
-            false,
+            false
         );
     });
 
@@ -564,6 +566,106 @@ describe('Api', function () {
                     assert.strictEqual(data.message, 'something awful happened');
                     done();
                 });
+            });
+        });
+
+        describe('Builds the request using the properties of the local config Object (.edgerc file)', () => {
+            it('when max_body is provided in the config', () => {
+                const req = {
+                    path: '/api/resource',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: {key: 'value'}
+                };
+
+                const edgercObject = {
+                    path: path.resolve(__dirname, '../test_edgerc'),
+                    section: 'custom:max_body'
+                };
+
+                const edgeGrid = new EdgeGrid(edgercObject);
+                // Call auth method
+                const response = edgeGrid.auth(req);
+                // Assertions
+                assert.strictEqual(response.config.max_body, 8192);
+            });
+
+            it('when max_body is provided in the config - NAN', () => {
+                const edgercObject = {
+                    path: path.resolve(__dirname, '../test_edgerc'),
+                    section: 'custom:max_body_NAN'
+                };
+                assert.throws(
+                    function () {
+                        return new EdgeGrid(edgercObject);
+                    },
+                    /max_body is not a valid number./
+                );
+            });
+
+            it('when max_body is not provided in the configuration, the default value is used', () => {
+                const req = {
+                    path: '/api/resource',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: {key: 'value'}
+                };
+
+                const edgercObject = {
+                    path: path.resolve(__dirname, '../test_edgerc'),
+                    section: 'no-max-body'
+                };
+
+                const edgeGrid = new EdgeGrid(edgercObject, undefined, undefined, undefined, undefined, 1000);
+                // Call auth method
+                const response = edgeGrid.auth(req);
+                // Assertions
+                assert.strictEqual(response.config.max_body, 131072); // picks default max_body 131072
+            });
+        });
+
+        describe('Builds the request using the config as string parameters', () => {
+            it('when max_body is provided in the config', () => {
+                const req = {
+                    path: '/api/resource',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: {key: 'value'}
+                };
+
+                const edgeGrid = new EdgeGrid('clientToken', 'clientSecret', 'accessToken', 'example.com', false, 8192);
+                // Call auth method
+                const response = edgeGrid.auth(req);
+                // Assertions
+                assert.strictEqual(response.config.max_body, 8192);
+            });
+
+
+            it('when max_body is not provided in the config', () => {
+                const req = {
+                    path: '/api/resource',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: {key: 'value'}
+                };
+
+                const edgeGrid = new EdgeGrid('clientToken', 'clientSecret', 'accessToken', 'example.com');
+                // Call auth method
+                const response = edgeGrid.auth(req);
+                // Assertions
+                assert.strictEqual(response.config.max_body, 131072);
             });
         });
     });

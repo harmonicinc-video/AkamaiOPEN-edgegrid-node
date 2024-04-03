@@ -201,4 +201,18 @@ describe('Signature Generation', function () {
             assert.strictEqual(test_auth.headers.Authorization, expected_header);
         });
     });
+
+    describe('POST request when max_body is provided in .edgerc file', function () {
+        it('should return the expected string when the signing request is run.', function () {
+            const expected_header = "EG1-HMAC-SHA256 client_token=akab-client-token-xxx-xxxxxxxxxxxxxxxx;access_token=akab-access-token-xxx-xxxxxxxxxxxxxxxx;timestamp=20140321T19:34:21+0000;nonce=nonce-xx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;signature=lUcTuRl/Iy5vmBp7uNvya9BoRaA9/oyHKC+pCDOlg1s=";
+            const data = "{\"name\":\"text24.devexp-cli-dns-test.net\",\"type\":\"SRV\",\"ttl\":300,\"zone\":\"devexp-cli-dns-test.net\",\"rdata\":[\"10 40 5061 small.example.com\",\"20 10 5060 tiny.example.com\"]}";
+            const request = {
+                "path": "testapi/v1/t3",
+                "method": "POST",
+                "body": data
+            };
+            test_auth = auth.generateAuth(request, client_token, client_secret, access_token, base_url, 169, nonce, timestamp);
+            assert.strictEqual(test_auth.headers.Authorization, expected_header);
+        });
+    });
 });

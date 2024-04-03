@@ -198,4 +198,11 @@ module.exports = {
         }
         return filePath;
     },
+
+    getDefaultOrMaxBody:function(max_body){
+        if (max_body !== undefined && isNaN(Number(max_body))) {
+            throw new Error('max_body is not a valid number.');
+        }
+        return Number(max_body) || 131072;
+    }
 };

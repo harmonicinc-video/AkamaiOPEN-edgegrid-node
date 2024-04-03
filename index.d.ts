@@ -2,10 +2,11 @@ import { AxiosError, AxiosResponse } from "axios";
 
 declare class EdgeGrid {
     constructor(clientTokenOrOptions: string | object,
-        clientSecret?: string,
-        accessToken?: string,
-        host?: string,
-        debug?: boolean);
+                clientSecret?: string,
+                accessToken?: string,
+                host?: string,
+                debug?: boolean,
+                max_body?: number);
 
     request: object;
     config: object;
