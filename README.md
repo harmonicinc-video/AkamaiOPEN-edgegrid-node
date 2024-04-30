@@ -1,6 +1,7 @@
 # EdgeGrid for Node.js
 
-[![Build Status](https://travis-ci.org/akamai/AkamaiOPEN-edgegrid-node.svg?branch=master)](https://travis-ci.org/akamai/AkamaiOPEN-edgegrid-node)
+![Build Status](https://github.com/akamai/AkamaiOPEN-edgegrid-node/actions/workflows/test.yml/badge.svg)
+
 
 This library implements an Authentication handler for the Akamai EdgeGrid Authentication scheme in Node.js. 
 
