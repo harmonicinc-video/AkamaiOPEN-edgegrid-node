@@ -1,5 +1,52 @@
 # RELEASE NOTES
 
+## X.X.X (X X, X)
+
+#### FEATURES/ENHANCEMENTS:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### BUG FIXES:
+
+
+* `max_body` is deprecated, ignored and replaced with constant value of 131072 bytes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 3.4.5 (Apr 3, 2024)
 
 #### BUG FIXES

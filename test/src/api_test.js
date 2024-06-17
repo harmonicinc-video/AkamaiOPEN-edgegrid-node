@@ -96,35 +96,6 @@ describe('Api', function () {
                 assert.equal(this.api.config.max_body, 131072);
             });
 
-            describe('when it is instantiated with an object with custom `max-body` value', function () {
-                beforeEach(function () {
-                    this.api = new Api({
-                        path: path.resolve(__dirname, '../test_edgerc'),
-                        section: 'custom:max-body'
-                    });
-                });
-
-                it('reports the client token from the edgerc associated with the specified section with custom `max-body`', function () {
-                    assert.strictEqual(this.api.config.client_token, 'sectionClientToken');
-                });
-
-                it('reports the client secret from the edgerc associated with the specified section with custom `max-body`', function () {
-                    assert.strictEqual(this.api.config.client_secret, 'sectionClientSecret');
-                });
-
-                it('reports the access token from the edgerc associated with the specified section with custom `max-body`', function () {
-                    assert.strictEqual(this.api.config.access_token, 'sectionAccessToken');
-                });
-
-                it('reports the API host from the edgerc associated with the specified section with custom `max-body`', function () {
-                    assert.strictEqual(this.api.config.host, 'https://sectionexample.luna.akamaiapis.net');
-                });
-
-                it('reports the max-body from the edgerc associated with the specified section with custom `max-body`', function () {
-                    assert.equal(this.api.config.max_body, 4096);
-                });
-            });
-
             describe('when it is instantiated with an object with custom `max_body` value', function () {
                 beforeEach(function () {
                     this.api = new Api({
@@ -150,7 +121,7 @@ describe('Api', function () {
                 });
 
                 it('reports the max-body from the edgerc associated with the specified section with custom `max_body`', function () {
-                    assert.equal(this.api.config.max_body, 8192);
+                    assert.equal(this.api.config.max_body, 131072);
                 });
             });
 
@@ -590,20 +561,29 @@ describe('Api', function () {
                 // Call auth method
                 const response = edgeGrid.auth(req);
                 // Assertions
-                assert.strictEqual(response.config.max_body, 8192);
+                assert.strictEqual(response.config.max_body, 131072);
             });
 
             it('when max_body is provided in the config - NAN', () => {
+                const req = {
+                    path: '/api/resource',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: {key: 'value'}
+                };
+
                 const edgercObject = {
                     path: path.resolve(__dirname, '../test_edgerc'),
                     section: 'custom:max_body_NAN'
                 };
-                assert.throws(
-                    function () {
-                        return new EdgeGrid(edgercObject);
-                    },
-                    /max_body is not a valid number./
-                );
+                const edgeGrid = new EdgeGrid(edgercObject);
+                // Call auth method
+                const response = edgeGrid.auth(req);
+                // Assertions
+                assert.strictEqual(response.config.max_body, 131072);
             });
 
             it('when max_body is not provided in the configuration, the default value is used', () => {
@@ -646,7 +626,7 @@ describe('Api', function () {
                 // Call auth method
                 const response = edgeGrid.auth(req);
                 // Assertions
-                assert.strictEqual(response.config.max_body, 8192);
+                assert.strictEqual(response.config.max_body, 131072);
             });
 
 

@@ -16,6 +16,7 @@ const crypto = require('crypto'),
     logger = require('./logger'),
     path = require('path'),
     os = require('os');
+const MAX_BODY = 131072
 
 function twoDigitNumberPad(number) {
     return String(number).padStart(2, '0');
@@ -27,6 +28,7 @@ module.exports = {
      *
      * @see https://developer.akamai.com/legacy/introduction/Client_Auth.html#authorizationheaderfields
      */
+    MAX_BODY,
     createTimestamp: function () {
         const date = new Date(Date.now());
 
@@ -40,8 +42,8 @@ module.exports = {
             twoDigitNumberPad(date.getUTCSeconds()) +
             '+0000';
     },
+    contentHash: function (request) {
 
-    contentHash: function (request, maxBody) {
         let contentHash = '',
             preparedBody = request.body || '',
             isTarball = preparedBody instanceof Uint8Array && request.headers['Content-Type'] === 'application/gzip';
@@ -70,13 +72,13 @@ module.exports = {
 
             logger.info('Signing content: \"' + preparedBody + '\"');
 
-            // If body data is too large, cut down to max-body size
-            if (preparedBody.length > maxBody) {
-                logger.warn('Data length (' + preparedBody.length + ') is larger than maximum ' + maxBody);
+            // If body data is too large, cut down to max-body size which is const value
+            if (preparedBody.length > MAX_BODY) {
+                logger.warn('Data length (' + preparedBody.length + ') is larger than maximum ' + MAX_BODY);
                 if (isTarball)
-                    preparedBody = preparedBody.slice(0, maxBody);
+                    preparedBody = preparedBody.slice(0, MAX_BODY);
                 else
-                    preparedBody = preparedBody.substring(0, maxBody);
+                    preparedBody = preparedBody.substring(0, MAX_BODY);
                 logger.info('Body truncated. New value \"' + preparedBody + '\"');
             }
 
@@ -88,7 +90,16 @@ module.exports = {
 
         return contentHash;
     },
-
+    /**
+     *
+     * @param {Object} request      The request Object. Can optionally contain a
+     *                              'headersToSign' property: An ordered list header names
+     *                              that will be included in the signature. This will be
+     *                              provided by specific APIs.
+     * @param {String} authHeader   The authorization header.
+     * @param {Number} maxBody      This value is deprecated.
+     * @deprecated maxBody
+     */
     dataToSign: function (request, authHeader, maxBody) {
         const parsedUrl = new URL(request.url),
             dataToSign = [
@@ -187,7 +198,19 @@ module.exports = {
 
         return key;
     },
-
+    /**
+     *
+     * @param {Object} request       The request Object. Can optionally contain a
+     *                               'headersToSign' property: An ordered list header names
+     *                               that will be included in the signature. This will be
+     *                               provided by specific APIs.
+     * @param {Date} timestamp       The timestamp with format "yyyyMMddTHH:mm:ss+0000".
+     * @param {String} clientSecret  The client secret value from the .edgerc file.
+     * @param {String} authHeader    The authorization header.
+     * @param maxBody                This value is deprecated.
+     * @returns {string}
+     * @deprecated maxBody
+     */
     signRequest: function (request, timestamp, clientSecret, authHeader, maxBody) {
         return this.base64HmacSha256(this.dataToSign(request, authHeader, maxBody), this.signingKey(timestamp, clientSecret));
     },
@@ -198,11 +221,4 @@ module.exports = {
         }
         return filePath;
     },
-
-    getDefaultOrMaxBody:function(max_body){
-        if (max_body !== undefined && isNaN(Number(max_body))) {
-            throw new Error('max_body is not a valid number.');
-        }
-        return Number(max_body) || 131072;
-    }
 };

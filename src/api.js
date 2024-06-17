@@ -18,13 +18,24 @@ const axios = require('axios'),
     helpers = require('./helpers'),
     logger = require('./logger');
 
+/**
+ *
+ * @param {String} client_token      The client token value from the .edgerc file.
+ * @param {String} client_secret     The client secret value from the .edgerc file.
+ * @param {String} access_token      The access token value from the .edgerc file.
+ * @param {String} host              The host a unique string followed by luna.akamaiapis.net from the .edgerc file.
+ * @param {Boolean} debug            The debug value allows to enable debugging.
+ * @param {Number} max_body          This value is deprecated.
+ * @constructor
+ * @deprecated max_body
+ */
 const EdgeGrid = function (client_token, client_secret, access_token, host, debug, max_body) {
     // accepting an object containing a path to .edgerc and a config section
     if (typeof arguments[0] === 'object') {
         let edgercPath = arguments[0];
         this._setConfigFromObj(edgercPath);
     } else {
-        this._setConfigFromStrings(client_token, client_secret, access_token, host, max_body);
+        this._setConfigFromStrings(client_token, client_secret, access_token, host);
     }
     if (process.env.EG_VERBOSE || debug || (typeof arguments[0] === 'object' && arguments[0].debug)) {
         axios.interceptors.request.use(request => {
@@ -76,7 +87,7 @@ EdgeGrid.prototype.auth = function (req) {
         this.config.client_secret,
         this.config.access_token,
         this.config.host,
-        this.config.max_body
+        helpers.MAX_BODY
     );
     if (req.headers['Accept'] === 'application/gzip' || req.headers['Accept'] === 'application/tar+gzip') {
         this.request["responseType"] = 'arraybuffer';
@@ -119,12 +130,12 @@ EdgeGrid.prototype._handleRedirect = function (resp, callback) {
 /**
  * Creates a config object from a set of parameters.
  *
- * @param {String} client_token    The client token
- * @param {String} client_secret   The client secret
- * @param {String} access_token    The access token
- * @param {String} host            The host
+ * @param {String} client_token      The client token value from the .edgerc file.
+ * @param {String} client_secret     The client secret value from the .edgerc file.
+ * @param {String} access_token      The access token value from the .edgerc file.
+ * @param {String} host              The host a unique string followed by luna.akamaiapis.net from the .edgerc file.
  */
-EdgeGrid.prototype._setConfigFromStrings = function (client_token, client_secret, access_token, host,  max_body) {
+EdgeGrid.prototype._setConfigFromStrings = function (client_token, client_secret, access_token, host) {
     if (!validatedArgs([client_token, client_secret, access_token, host])) {
         throw new Error('Insufficient Akamai credentials');
     }
@@ -134,7 +145,7 @@ EdgeGrid.prototype._setConfigFromStrings = function (client_token, client_secret
         client_secret: client_secret,
         access_token: access_token,
         host: host.indexOf('https://') > -1 ? host : 'https://' + host,
-        max_body: helpers.getDefaultOrMaxBody(max_body)
+        max_body: helpers.MAX_BODY
     };
 };
 
