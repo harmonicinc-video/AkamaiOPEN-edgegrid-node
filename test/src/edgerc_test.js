@@ -124,7 +124,7 @@ describe('edgerc', function () {
             });
 
             it('reports the max_body associated with the section with with custom `max_body`', function () {
-                assert.equal(this.config.max_body, 8192);
+                assert.equal(this.config.max_body, 131072);
             });
         });
 

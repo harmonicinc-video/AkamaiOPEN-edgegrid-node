@@ -40,7 +40,10 @@ function getSection(lines, sectionName) {
 }
 
 function validatedConfig(config) {
-    config.max_body = helpers.getDefaultOrMaxBody(config.max_body);
+    /**
+     * @deprecated max_body - This value is deprecated.
+     */
+    config.max_body = helpers.MAX_BODY
 
     if (!(config.host && config.access_token &&
         config.client_secret && config.client_token)) {

@@ -1,5 +1,15 @@
 # RELEASE NOTES
 
+## 3.5.0 (Jul 02, 2024)
+
+#### IMPROVEMENTS:
+
+* Updated various dependencies
+
+#### BUG FIXES:
+
+* `max_body` is deprecated, ignored and replaced with constant value of 131072 bytes
+
 ## 3.4.5 (Apr 3, 2024)
 
 #### BUG FIXES
