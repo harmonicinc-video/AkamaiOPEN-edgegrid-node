@@ -1,5 +1,11 @@
 # RELEASE NOTES
 
+## 3.5.1 (Sep 10, 2024)
+
+#### IMPROVEMENTS:
+
+* Updated various dependencies
+
 ## 3.5.0 (Jul 02, 2024)
 
 #### IMPROVEMENTS:
