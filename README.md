@@ -2,48 +2,69 @@
 
 ![Build Status](https://github.com/akamai/AkamaiOPEN-edgegrid-node/actions/workflows/test.yml/badge.svg)
 
+This library implements an Authentication handler for the Akamai EdgeGrid Authentication scheme in Node.js for Node v[?]-18.
 
-This library implements an Authentication handler for the Akamai EdgeGrid Authentication scheme in Node.js. 
-
-It’s Akamai’s current and officially supported version of AkamaiOPEN EdgeGrid for Node.js. 
 You can find the most up-to-date package in [NPM](https://www.npmjs.com/package/akamai-edgegrid) under `akamai-edgegrid`.
-
-> __IMPORTANT:__ Akamai will not maintain the `edgegrid` package in NPM going forward.
 
 ## Install
 
 `npm install --save akamai-edgegrid`
 
-## Example
+## Authentication
 
-### Credentials
+You can obtain the authentication credentials through an API client. Requests to the API are marked with a timestamp and a signature and are executed immediately.
 
-Before you begin, you need to [Create authentication credentials](https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials) in [Control Center](https://control.akamai.com).
+1. [Create authentication credentials](https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials).
 
-### .edgerc authentication
+2. Place your credentials in an EdgeGrid file `~/.edgerc`, in the `[default]` section.
 
-The preferred method of using the library involves providing the path to an `.edgerc` file. This file contains the authentication credentials used to sign your requests.
+    ```
+    [default]
+    client_secret = C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN=
+    host = akab-h05tnam3wl42son7nktnlnnx-kbob3i3v.luna.akamaiapis.net
+    access_token = akab-acc35t0k3nodujqunph3w7hzp7-gtm6ij
+    client_token = akab-c113ntt0k3n4qtari252bfxxbsl-yvsdj
+    ```
 
-> __NOTE__: Requests to the API are signed with a timestamp and are executed immediately.
+3. Use your local `.edgerc` by providing the path to your resource file and credentials' section header.
+
+    ```javascript
+    var eg = new EdgeGrid({
+      path: '/path/to/.edgerc',
+      section: '<section-header>'
+    });
+    ```
+
+    Alternatively, you can hard code your credentials by passing the credential values to the `EdgeGrid()` method.
+
+    ```javascript
+    var clientToken = "akab-c113ntt0k3n4qtari252bfxxbsl-yvsdj",
+        clientSecret = "C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN=",
+        accessToken = "akab-acc35t0k3nodujqunph3w7hzp7-gtm6ij",
+        baseUri = "akab-h05tnam3wl42son7nktnlnnx-kbob3i3v.luna.akamaiapis.net";
+
+    var eg = new EdgeGrid(clientToken, clientSecret, accessToken, baseUri);
+    ```
+
+## Use
+
+To use the library, provide the path to your `.edgerc`, your credentials section header, and the appropriate endpoint information.
 
 ```javascript
 var EdgeGrid = require('akamai-edgegrid');
 
-var data = 'bodyData';
-
-// Supply the path to your .edgerc file and name
-// of the section with authorization to the client
-// you are calling (default section is 'default')
 var eg = new EdgeGrid({
   path: '/path/to/.edgerc',
-  section: 'section-name'
+  section: 'section-header'
 });
 
 eg.auth({
-  path: '/diagnostic-tools/v1/locations',
+  path: '/identity-management/v3/user-profile',
   method: 'GET',
-  headers: {},
-  body: data
+  headers: {
+    'Accept': "application/json"
+  },
+  body: {}
 });
 
 eg.send(function(error, response, body) {
@@ -51,63 +72,48 @@ eg.send(function(error, response, body) {
 });
 ```
 
-An `.edgerc` file contains sections for each of your API client credentials and is usually hosted in your home directory:
-
-```plaintext
-[default]
-host = akaa-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.luna.akamaiapis.net/
-client_token = akab-XXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXX
-client_secret = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-access_token = akab-XXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXX
-max-body = 131072
-
-[section-name]
-host = akaa-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.luna.akamaiapis.net/
-client_token = akab-XXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXX
-client_secret = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-access_token = akab-XXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXX
-max-body = 131072
-```
-
-### Manual authentication
-
-You can also authenticate manually by hard coding your credential values and passing them to the EdgeGrid client:
-
-```javascript
-var clientToken = "akab-client-token-xxx-xxxxxxxxxxxxxxxx",
-    clientSecret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
-    accessToken = "akab-access-token-xxx-xxxxxxxxxxxxxxxx",
-    baseUri = "https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/";
-
-var eg = new EdgeGrid(clientToken, clientSecret, accessToken, baseUri);
-```
-
 ### Chaining
 
-You can also chain calls using the `akamai-edgegrid` like in this example:
+You can also chain calls by combining the execution of `auth` and `send` methods.
 
 ```javascript
-...
 eg.auth({
-  path: '/papi/v1/groups',
+  path: '/identity-management/v3/user-profile',
   method: 'GET',
   headers: {},
+  body: {}
 }).send(function (error, response, body) {
   console.log(body);
 });
 ```
 
-This is an example of an API call to [List groups in your property](https://developer.akamai.com/api/core_features/property_manager/v1.html#getgroups). Change the `path` element to reference an endpoint in any of the [Akamai APIs](https://developer.akamai.com/api).
+### Query string parameters
 
-### Headers
-
-Enter request headers as name-value pairs in an object. 
-
-> **NOTE:** You don't need to include the `Content-Type` and `Content-Length` headers. The authentication layer adds these values.
+When entering query parameters use the `qs` property under the `auth` method. Set up the parameters as name-value pairs in a object.
 
 ```javascript
 eg.auth({
-  path: '/papi/v1/groups',
+    path: '/identity-management/v3/user-profile',
+    method: 'GET',
+    headers: {},
+    qs: {
+        authGrants: true,
+        notifications: true,
+        actions: true
+    },
+    body: {}
+})
+```
+
+### Headers
+
+Enter request headers as name-value pairs in an object.
+
+> **Note:** You don't need to include the `Content-Type` and `Content-Length` headers. The authentication layer adds these values.
+
+```javascript
+eg.auth({
+  path: '/identity-management/v3/user-profile',
   method: 'GET',
   headers: {
     'Accept': "application/json"
@@ -117,43 +123,30 @@ eg.auth({
 
 ### Body data
 
-You can provide the request `body` as either an object or as a POST data form string.
+Provide the request body as an object or as a POST data formatted string.
 
 ```javascript
 // Object
 eg.auth({
-    path: '/papi/v1/cpcodes?contractId=ctr_1234&groupId=grp_1234',
-    method: 'POST',
-    body: {
-        cpcodeName: "test-cpcode",
-        productId: "prd_Site_Accel"
-    }
-});
-```
-  
-### Query string parameters
-
-When entering query parameters use the `qs` property under the `auth` method. Set up the parameters as name-value pairs in a object.
-
-```javascript
-eg.auth({
-    path: '/papi/v1/cpcodes',
-    method: 'POST',
+    path: '/identity-management/v3/user-profile/basic-info',
+    method: 'PUT',
     headers: {},
-    qs: {
-        contractId: "ctr_1234",
-        groupId: "grp_1234",
-    },
-    body: data
-})
-
-// Produces request URL similar to:
-// https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/papi/v1/cpcodes?contractId=ctr_1234&groupId=grp_1234
+    body: {
+        contactType: "Billing",
+        country: "USA",
+        firstName: "John",
+        lastName: "Smith",
+        phone: "3456788765",
+        preferredLanguage: "English",
+        sessionTimeOut: 30,
+        timeZone: "GMT"
+   }
+});
 ```
 
 ### Encoding
 
-When interacting with binary data, such as during retrieval of PDF invoices, `responseType` should be specified as `arraybuffer` during the `auth` method call. Omission of `responseType` will cause an unreadable or blank response.
+When interacting with binary data, such as during the retrieval of PDF invoices, specify the `responseType` as an `arraybuffer` in the `auth` method call. Omitting the `responseType` will cause an unreadable or blank response.
 
 ```javascript
 const fs = require('fs');
@@ -176,95 +169,71 @@ eg.auth({
 ```
 
 ### Proxy
-To use edgegrid with proxy, you can configure it with `proxy` field:
 
-```javascript
-eg.auth({
-  path : `/papi/v1/cpcodes`,
-  method: 'GET',
-  proxy: {
-    host: 'my.proxy.com',
-    protocol: "https",
-    port: 3128,
-    auth: {
-      username: 'my-user',
-      password: 'my-password'
+To use edgegrid with proxy, you can configure it with one of these methods:
+
+- Add the `proxy` argument to the `EdgeGrid()` method.
+
+  ```javascript
+  eg.auth({
+    path : `/identity-management/v3/user-profile`,
+    method: 'GET',
+    proxy: {
+      host: 'my.proxy.com',
+      protocol: "https",
+      port: 3128,
+      auth: {
+        username: 'my-user',
+        password: 'my-password'
+      }
     }
-  }
-}).send((err, response) => {
-  if (err) {
-    return console.log(err);
-  }
-  console.log('Success!');
-  // Do something with response
-});
-```
+  }).send((err, response) => {
+    if (err) {
+      return console.log(err);
+    }
+    console.log('Success!');
+    // Do something with the response
+  });
+  ```
 
-or use environment variable:
+- Set the `HTTPS_PROXY` environment variable.
 
-```shell
-$ export https_proxy=https://username:password@host:port
-$ node myapp.js
-```
+  ```shell
+  $ export HTTPS_PROXY=https://username:password@host:port
+  $ node myapp.js
+  ```
 
 ### Debug
 
-With EdgeGrid you can enable debugging either as part of the EdgeGrid instantiation object
-or by setting the `EG_VERBOSE` environment variable. When enabled, EdgeGrid provides 
-additional information about the request that's helpful for debugging.
+Enable debugging to get additional information about a request. You can configure this with one of these methods:
 
-Here's an EdgeGrid example:
+- Add the `debug` argument to the `EdgeGrid()` method.
 
-```javascript
-// Set debug via EdgeGrid property
-var eg = new EdgeGrid({
-  path: edgercPath,
-  section: sectionName,
-  debug: true
-});
-```
+  ```javascript
+  var eg = new EdgeGrid({
+    path: '/path/to/.edgerc',
+    section: 'section-header'
+    debug: true
+  });
+  ```
 
-And here's an example for a command-line argument:
+- Set the `EG_VERBOSE` environment variable.
 
-```bash
-// Set debug via environment variable
-$ export EG_VERBOSE=true
-$ node src/main.js
+  ```shell
+  $ export EG_VERBOSE=true
+  $ node src/main.js
+  ```
 
-Starting Request {
-  url: 'https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/papi/v1/groups',
-  method: 'get',
-  data: '',
-  headers: {
-    common: { Accept: 'application/json, text/plain, */*' },
-    delete: {},
-...
-Response: {
-  status: 200,
-  statusText: 'OK',
-  headers: {
-    server: 'nginx',
-    'content-type': 'application/json;charset=UTF-8',
-...
-}
-```
+
 
 ## Reporting issues
 
-To report a problem or make a suggestion, create a new [GitHub issue](https://github.com/akamai/AkamaiOPEN-edgegrid-node/issues).
+To report an issue or make a suggestion, create a new [GitHub issue](https://github.com/akamai/AkamaiOPEN-edgegrid-node/issues).
 
 ## License
 
-Copyright 2021 Akamai Technologies, Inc. All rights reserved.
+Copyright 2024 Akamai Technologies, Inc. All rights reserved.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use these files except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
 
- http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

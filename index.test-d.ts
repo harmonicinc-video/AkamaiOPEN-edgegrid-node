@@ -9,7 +9,7 @@ const eg = new EdgeGrid({
 expectType<EdgeGrid>(eg)
 
 var req = {
-    path: '/diagnostic-tools/v1/locations',
+    path: '/identity-management/v3/user-profile',
     method: 'GET',
     headers: {},
     body: 'bodyData'
