@@ -8,7 +8,7 @@
 //
 // 2. Add the `credentialId` from the update example to the path. You can only delete inactive credentials. Sending the request on an active set will return a 400. Use the update credentials example for deactivation.
 //
-// **Important:** Make sure you don't use your actual credentials for this operation. Otherwise, you'll block your access to the Akamai APIs.
+// **Important:** Don't use your actual credentials for this operation. Otherwise, you'll block your access to the Akamai APIs.
 //
 // 3. Open a Terminal or shell instance and run "node example/delete-credentials.js".
 //
