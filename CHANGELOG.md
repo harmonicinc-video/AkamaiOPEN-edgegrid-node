@@ -1,5 +1,11 @@
 # Release notes
 
+## 3.5.2 (Dec 05, 2024)
+
+### Features/Enhancements
+
+* Updated various dependencies.
+
 ## 3.5.1 (Sep 10, 2024)
 
 ### Features/Enhancements
