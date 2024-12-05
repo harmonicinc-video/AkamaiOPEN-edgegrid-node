@@ -3,16 +3,16 @@ import EdgeGrid = require('.')
 
 const eg = new EdgeGrid({
     path: '/path/to/.edgerc',
-    section: 'section-name'
+    section: 'section-header'
 });
 
 expectType<EdgeGrid>(eg)
 
 var req = {
-    path: '/diagnostic-tools/v1/locations',
+    path: '/identity-management/v3/user-profile',
     method: 'GET',
     headers: {},
-    body: 'bodyData'
+    body: {}
 }
 expectType<EdgeGrid>(eg.auth(req))
 
