@@ -9,6 +9,9 @@ To run any of the files:
 1. Append the path to your `.edgerc`. The default is set to the home directory.
 2. Provide the section heading for the set of credentials you'd like to use. The default is `default`.
 3. For update and delete operations, replace the dummy `credentialId` with your valid `credentialId`.
+
+   > **Important:** Don't use the credentials you're actively using when running the update (inactivation) and delete operations. Otherwise, you'll block your access to the Akamai APIs.
+
 4. Open a Terminal or shell instance and run the .js file.
 
     ```shell
