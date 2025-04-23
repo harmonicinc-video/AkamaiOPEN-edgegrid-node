@@ -1,23 +1,47 @@
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+
+declare namespace EdgeGrid {
+    interface EdgeGridConfig {
+        path?: string;
+        section?: string;
+        debug?: boolean;
+        client_token?: string;
+        client_secret?: string;
+        access_token?: string;
+        host?: string;
+    }
+
+    interface Request {
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'; // Common methods
+        path: string;
+        headers?: Record<string, any>;
+        qs?: Record<string, any>; // Query string parameters
+        body?: any; // Request body (string, object, Buffer, etc.)
+    }
+
+    // Define a type for the callback function used in send()
+    type SendCallback = (error: AxiosError | Error | null, response?: AxiosResponse, body?: any) => void;
+}
 
 declare class EdgeGrid {
-    constructor(clientTokenOrOptions: string | object,
-                clientSecret?: string,
-                accessToken?: string,
-                host?: string,
-                debug?: boolean,
-                max_body?: number);
+    config: {
+        client_token: string;
+        client_secret: string;
+        access_token: string;
+        host: string;
+        max_body: number; // Still present internally, though deprecated
+    };
+    request: AxiosRequestConfig; // Stores the prepared Axios request config
 
-    request: object;
-    config: object;
+    constructor(config: EdgeGrid.EdgeGridConfig);
+    constructor(client_token: string, client_secret: string, access_token: string, host: string, debug?: boolean);
 
     /**
-    * Sends the request and invokes the callback function.
-    *
-    * @param  {Function} callback The callback function.
-    * @return EdgeGrid object (self)
-    */
-    send(callback: (error: AxiosError, response?: AxiosResponse, body?: string) => void): EdgeGrid;
+     * Sends the request and invokes the callback function.
+     * @param {Function} callback The callback function (err, response, body).
+     * @returns EdgeGrid object (self)
+     */
+    send(callback: EdgeGrid.SendCallback): this;
 
     /**
     * Builds the request using the properties of the local config Object.
@@ -28,7 +52,8 @@ declare class EdgeGrid {
     *                      provided by specific APIs.
     * @return EdgeGrid object (self)
     */
-    auth(req: object): EdgeGrid;
+    auth(req: EdgeGrid.Request): this;
 }
 
-export = EdgeGrid;
+// Use default export for better ESM compatibility
+export default EdgeGrid;

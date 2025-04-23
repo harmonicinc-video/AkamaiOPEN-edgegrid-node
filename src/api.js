@@ -1,8 +1,9 @@
-const axios = require('axios'),
-    auth = require('./auth'),
-    edgerc = require('./edgerc'),
-    helpers = require('./helpers'),
-    logger = require('./logger');
+import axios from 'axios';
+import { generateAuth } from './auth.js';
+import edgerc from './edgerc.js';
+import * as helpers from './helpers.js';
+import logger from './logger.js';
+
 
 /**
  *
@@ -13,7 +14,6 @@ const axios = require('axios'),
  * @param {Boolean} debug            The debug value allows to enable debugging.
  * @param {Number} max_body          This value is deprecated.
  * @constructor
- * @deprecated max_body
  */
 const EdgeGrid = function (client_token, client_secret, access_token, host, debug, max_body) {
     // accepting an object containing a path to .edgerc and a config section
@@ -67,7 +67,7 @@ EdgeGrid.prototype.auth = function (req) {
     // this assignment is done in order to assert backwards compatibility of this library - a `body` field is accepted in this library, whereas axios expects the request body to be in `data` field
     req.data = req.body;
 
-    this.request = auth.generateAuth(
+    this.request = generateAuth(
         req,
         this.config.client_token,
         this.config.client_secret,
@@ -104,13 +104,13 @@ EdgeGrid.prototype.send = function (callback) {
 
 EdgeGrid.prototype._handleRedirect = function (resp, callback) {
     const parsedUrl = new URL(resp.headers['location']);
-
+        
     resp.headers['authorization'] = undefined;
     this.request.url = undefined;
     this.request.path = parsedUrl.pathname + parsedUrl.search;
 
     this.auth(this.request);
-    this.send(callback);
+        this.send(callback);
 };
 
 /**
@@ -161,4 +161,4 @@ EdgeGrid.prototype._setConfigFromObj = function (obj) {
     this.config = edgerc(obj.path, obj.section);
 };
 
-module.exports = EdgeGrid;
+export default EdgeGrid;

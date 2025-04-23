@@ -1,6 +1,6 @@
-const assert = require('assert'),
-    helpers = require('../../src/helpers'),
-    os = require('os');
+import assert from 'assert';
+import * as helpers from '../../src/helpers.js';
+import os from 'os';
 
 describe('helpers', function () {
     describe('#base64Sha256', function () {
@@ -114,53 +114,53 @@ describe('helpers', function () {
     describe('#extendHeaders', function () {
         describe('when Content-Type is not provided', function () {
             it('should set application/json as default', function () {
-                headers = helpers.extendHeaders({})
-                assert.strictEqual(headers['Content-Type'], 'application/json')
-            })
-        })
+                const headers = helpers.extendHeaders({});
+                assert.strictEqual(headers['Content-Type'], 'application/json');
+            });
+        });
 
         describe('when Content-Type is provided', function () {
             it('should preserve the value', function () {
-                contentType = 'text/html'
-                headers = helpers.extendHeaders({
+                const contentType = 'text/html';
+                const headers = helpers.extendHeaders({
                     'Content-Type': contentType
-                })
-                assert.strictEqual(headers['Content-Type'], contentType)
-            })
-        })
+                });
+                assert.strictEqual(headers['Content-Type'], contentType);
+            });
+        });
 
         describe('when Accept is not provided', function () {
             it('should set aapplication/json as default', function () {
-                headers = helpers.extendHeaders({})
-                assert.strictEqual(headers['Accept'], 'application/json')
-            })
-        })
+                const headers = helpers.extendHeaders({});
+                assert.strictEqual(headers['Accept'], 'application/json');
+            });
+        });
 
         describe('when Accept is provided', function () {
             it('should preserve the value', function () {
-                accept = 'text/html'
-                headers = helpers.extendHeaders({
+                const accept = 'text/html';
+                const headers = helpers.extendHeaders({
                     'Accept': accept
-                })
-                assert.strictEqual(headers['Accept'], accept)
-            })
-        })
+                });
+                assert.strictEqual(headers['Accept'], accept);
+            });
+        });
 
         describe('when akamai cli user agent env is not provided', function () {
             describe('when user agent is set in headers', function () {
                 it('should preserve the value and not append anything', function () {
-                    testAgent = 'testAgent/1.0.0'
-                    headers = helpers.extendHeaders({
+                    const testAgent = 'testAgent/1.0.0';
+                    const headers = helpers.extendHeaders({
                         'User-Agent': testAgent
                     });
-                    assert.strictEqual(headers['User-Agent'], testAgent)
+                    assert.strictEqual(headers['User-Agent'], testAgent);
                 });
             });
 
             describe('when no user agent is set in headers', function () {
                 it('should do nothing', function () {
-                    headers = helpers.extendHeaders({})
-                    assert.equal(headers.hasOwnProperty('User-Agent'), false)
+                    const headers = helpers.extendHeaders({});
+                    assert.equal(headers.hasOwnProperty('User-Agent'), false);
                 });
             });
         });
@@ -183,20 +183,20 @@ describe('helpers', function () {
 
             describe('when user agent is set in headers', function () {
                 it('should append akamaiCLI agent', function () {
-                    testAgent = 'testAgent/1.0.0'
-                    headers = helpers.extendHeaders({
+                    const testAgent = 'testAgent/1.0.0';
+                    const headers = helpers.extendHeaders({
                         'User-Agent': testAgent
                     });
-                    expectedAgent = testAgent + " " + this.akamaiCLIAgent
-                    assert.strictEqual(headers['User-Agent'], expectedAgent)
+                    const expectedAgent = testAgent + " " + this.akamaiCLIAgent;
+                    assert.strictEqual(headers['User-Agent'], expectedAgent);
                 });
             });
 
             describe('when no user agent is set in headers', function () {
                 describe('when both akamaiCLI and command env is set', function () {
                     it('should set two user agents', function () {
-                        headers = helpers.extendHeaders({})
-                        assert.strictEqual(headers['User-Agent'], this.akamaiCLIAgent)
+                        const headers = helpers.extendHeaders({});
+                        assert.strictEqual(headers['User-Agent'], this.akamaiCLIAgent);
                     });
                 });
 
@@ -208,7 +208,7 @@ describe('helpers', function () {
                     });
     
                     it("should only set AkamaiCLI/version User-Agent", function () {
-                        headers = helpers.extendHeaders({})
+                        const headers = helpers.extendHeaders({});
                         assert.strictEqual(headers['User-Agent'], this.akamaiCLIAgent);
                     });
                 });
@@ -221,12 +221,12 @@ describe('helpers', function () {
                     });
     
                     it("should only set AkamaiCLI/version User-Agent", function () {
-                        headers = helpers.extendHeaders({})
+                        const headers = helpers.extendHeaders({});
                         assert.strictEqual(headers['User-Agent'], this.akamaiCLIAgent);
                     });
                 });
             });
 
-        })
-    })
+        });
+    });
 });

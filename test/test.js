@@ -1,8 +1,13 @@
 // Instrument the tests
-const assert = require("assert"),
-    auth = require('../src/auth.js'),
-    path = require('path'),
-    fs = require('fs');
+import assert from 'assert';
+import * as auth from '../src/auth.js';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// Replicate __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const base_url = "https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/",
     access_token = "akab-access-token-xxx-xxxxxxxxxxxxxxxx",

@@ -1,6 +1,6 @@
-const fs = require('fs'),
-    logger = require('./logger'),
-    helpers = require('./helpers');
+import fs from 'fs';
+import logger from './logger.js';
+import * as helpers from './helpers.js';
 
 function getSection(lines, sectionName) {
     const match = /^\s*\[(.*)]/,
@@ -26,10 +26,7 @@ function getSection(lines, sectionName) {
 }
 
 function validatedConfig(config) {
-    /**
-     * @deprecated max_body - This value is deprecated.
-     */
-    config.max_body = helpers.MAX_BODY
+    config.max_body = helpers.MAX_BODY;
 
     if (!(config.host && config.access_token &&
         config.client_secret && config.client_token)) {
@@ -41,7 +38,7 @@ function validatedConfig(config) {
                 errorMessage += "\nMissing: " + token;
             }
         });
-        console.log('Missing part of the configuration:\n' + errorMessage);
+        console.error('Missing part of the configuration:\n' + errorMessage);
         return {};
     }
 
@@ -95,7 +92,6 @@ function readEnv(section) {
         prefix = !section || section === "default" ? "AKAMAI_" : "AKAMAI_" + section.toUpperCase() + "_",
         envConfig = {};
 
-
     for (const key of requiredKeys) {
         const varName = prefix + key;
         if (!process.env[varName]) {
@@ -111,7 +107,7 @@ function readEnv(section) {
     return validatedConfig(envConfig);
 }
 
-module.exports = function (path, conf) {
+export default function (path, conf) {
     const confSection = conf || 'default',
         envConf = readEnv(confSection);
     if (envConf['host']) {
@@ -121,11 +117,14 @@ module.exports = function (path, conf) {
         throw new Error("Either path to '.edgerc' or environment variables with edgerc configuration has to be provided.");
     }
     path = helpers.resolveHome(path);
+    if (!fs.existsSync(path)) {
+        throw new Error(`Edgerc file not found at: ${path}`);
+    }
     const edgerc = fs.readFileSync(path).toString().split('\n'),
         confData = getSection(edgerc, confSection);
 
     if (!confData.length) {
-        throw new Error('An error occurred parsing the .edgerc file. You probably specified an invalid section name.');
+        throw new Error('An error occurred parsing the .edgerc file. You probably specified an invalid section name: ' + confSection);
     }
 
     return buildObj(confData);

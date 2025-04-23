@@ -1,12 +1,25 @@
-const log4js = require('log4js'),
-    logger = log4js.getLogger();
+import pino from 'pino';
 
-if (!process.env.LOG4JS_CONFIG) {
-  logger.level = log4js.levels.ERROR;
+const isDevelopment = process.env.NODE_ENV !== 'production';
+const options = {};
+
+if (isDevelopment) {
+  options.level = 'debug';
+  options.transport = {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      translateTime: 'SYS:standard',
+      ignore: 'pid,hostname',
+    },
+  };
 }
 
+// In test environment, disable logging
 if (process.env.EDGEGRID_ENV === 'test') {
-  logger.level = log4js.levels.OFF;
+  options.level = 'silent';
 }
 
-module.exports = logger;
+const logger = pino(options);
+
+export default logger;
