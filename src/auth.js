@@ -1,7 +1,7 @@
-const uuid = require('uuid'),
-    helpers = require('./helpers'),
-    logger = require('./logger'),
-    url = require('url');
+import { v4 as uuidv4 } from 'uuid';
+import * as helpers from './helpers.js';
+import logger from './logger.js';
+import url from 'url';
 
 /**
  *
@@ -16,7 +16,6 @@ const uuid = require('uuid'),
  * @param {String} nonce           A random string used to detect replayed request messages.
  * @param {Number} maxBody         This parameter is deprecated.
  * @returns {string}
- * @deprecated maxBody
  */
 function makeAuthHeader(request, clientToken, accessToken, clientSecret, timestamp, nonce, maxBody) {
     const keyValuePairs = {
@@ -46,46 +45,45 @@ function makeAuthHeader(request, clientToken, accessToken, clientSecret, timesta
 }
 
 function makeURL(host, path, queryStringObj) {
-    const parsed = new URL(path, host);
-    if (queryStringObj) {
+        const parsed = new URL(path, host);
+        if (queryStringObj) {
         const queryFromObject = new url.URLSearchParams();
-        for (const key of Object.keys(queryStringObj)) {
-            queryFromObject.append(key, queryStringObj[key]);
+            for (const key of Object.keys(queryStringObj)) {
+                queryFromObject.append(key, queryStringObj[key]);
+            }
+            parsed.search = queryFromObject.toString();
         }
-        parsed.search = queryFromObject.toString();
-    }
 
     return url.format(parsed);
 }
 
-module.exports = {
-    /**
-     *
-     * @param {Object} request        The request Object. Can optionally contain a
-     *                                'headersToSign' property: An ordered list header names
-     *                                that will be included in the signature. This will be
-     *                                provided by specific APIs.
-     * @param {String} clientToken    The client token value from the .edgerc file.
-     * @param {String} clientSecret   The client secret value from the .edgerc file.
-     * @param {String} accessToken    The access token value from the .edgerc file.
-     * @param {String} host           The host a unique string followed by luna.akamaiapis.net from the .edgerc file.
-     * @param {Number} maxBody        This value is deprecated.
-     * @param {String} guid           A random string used to detect replayed request messages.
-     * @param {Date} timestamp        The timestamp with format "yyyyMMddTHH:mm:ss+0000".
-     * @returns {{headers}|*}         The request Object.
-     * @deprecated maxBody
-     */
-    generateAuth: function (request, clientToken, clientSecret, accessToken, host, maxBody, guid, timestamp) {
-        guid = guid || uuid.v4();
-        timestamp = timestamp || helpers.createTimestamp();
+/**
+ *
+ * @param {Object} request        The request Object. Can optionally contain a
+ *                                'headersToSign' property: An ordered list header names
+ *                                that will be included in the signature. This will be
+ *                                provided by specific APIs.
+ * @param {String} clientToken    The client token value from the .edgerc file.
+ * @param {String} clientSecret   The client secret value from the .edgerc file.
+ * @param {String} accessToken    The access token value from the .edgerc file.
+ * @param {String} host           The host a unique string followed by luna.akamaiapis.net from the .edgerc file.
+ * @param {Number} maxBody        This value is deprecated.
+ * @param {String} guid           A random string used to detect replayed request messages.
+ * @param {Date} timestamp        The timestamp with format "yyyyMMddTHH:mm:ss+0000".
+ * @returns {{headers}|*}         The request Object.
+ */
+function generateAuth(request, clientToken, clientSecret, accessToken, host, maxBody, guid, timestamp) {
+    guid = guid || uuidv4();
+    timestamp = timestamp || helpers.createTimestamp();
 
-        if (!request.hasOwnProperty('headers')) {
-            request.headers = {};
-        }
-
-        request.url = makeURL(host, request.path, request.qs);
-        request.headers.Authorization = makeAuthHeader(request, clientToken, accessToken, clientSecret, timestamp, guid, maxBody);
-
-        return request;
+    if (!request.hasOwnProperty('headers')) {
+        request.headers = {};
     }
-};
+
+    request.url = makeURL(host, request.path, request.qs);
+    request.headers.Authorization = makeAuthHeader(request, clientToken, accessToken, clientSecret, timestamp, guid, maxBody);
+
+    return request;
+}
+
+export { generateAuth };

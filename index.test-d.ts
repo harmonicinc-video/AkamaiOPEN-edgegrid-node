@@ -1,5 +1,5 @@
 import { expectType } from 'tsd';
-import EdgeGrid = require('.')
+import EdgeGrid from '.';
 
 const eg = new EdgeGrid({
     path: '/path/to/.edgerc',
@@ -10,7 +10,7 @@ expectType<EdgeGrid>(eg)
 
 var req = {
     path: '/identity-management/v3/user-profile',
-    method: 'GET',
+    method: "GET" as "GET",
     headers: {},
     body: {}
 }

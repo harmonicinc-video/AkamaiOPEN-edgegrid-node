@@ -1,2 +1,2 @@
-const EdgeGrid = require('./src/api.js');
-module.exports = EdgeGrid;
+import EdgeGrid from './src/api.js';
+export default EdgeGrid;

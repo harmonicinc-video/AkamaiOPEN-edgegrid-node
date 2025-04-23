@@ -1,6 +1,11 @@
-const assert = require('assert'),
-    path = require('path'),
-    edgerc = require('../../src/edgerc');
+import assert from 'assert';
+import path from 'path';
+import edgerc from '../../src/edgerc.js';
+import { fileURLToPath } from 'url';
+
+// Replicate __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 describe('edgerc', function () {
     beforeEach(function () {

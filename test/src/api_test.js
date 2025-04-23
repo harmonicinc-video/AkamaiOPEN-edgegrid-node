@@ -1,9 +1,13 @@
-const assert = require('assert'),
-    nock = require('nock'),
-    path = require('path'),
-    Api = require('../../src/api');
+import assert from 'assert';
+import nock from 'nock';
+import path from 'path';
+import Api from '../../src/api.js';
+import EdgeGrid from "../../index.js";
+import { fileURLToPath } from 'url';
 
-const EdgeGrid = require("../../index");
+// Replicate __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 describe('Api', function () {
     beforeEach(function () {
